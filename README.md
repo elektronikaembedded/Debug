@@ -81,6 +81,6 @@ Debug
 └── usb_cdc/
     ├── debug_transport_usb_cdc_st.c
     └── debug_transport_usb_cdc_st.h
----
+---c
 ## Folder Structure1
 
