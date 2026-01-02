@@ -164,3 +164,8 @@ log_level_t lvl = debug_get_level();
 * UART (ST, TI, NXP)
 
 * USB CDC (ST)
+
+### License
+
+This project is licensed under the MIT License. See LICENSE
+ for details.
