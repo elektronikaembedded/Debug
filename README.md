@@ -89,7 +89,7 @@ Debug
 
 Edit `config/config.h` to enable or disable features:
 
-```
+```c
 #define DEBUG_ENABLE                YES
 #define DEBUG_BUFFER_SIZE           256
 #define DEBUG_USE_BAREMETAL         YES
@@ -99,50 +99,3 @@ Edit `config/config.h` to enable or disable features:
 #define DEBUG_ENABLE_SEQUENCE_NO    YES
 #define DEBUG_ENABLE_TIME_DATE_INFO YES
 #define DEBUG_ENABLE_THREAD_INFO    YES
-
-### Initialization
-
-```
-#include "debug.h"
-#include "debug_port.h"
-#include "debug_transport.h"
-
-int main(void) {
-    debug_transport_hal_t transport;
-    debug_port_t port;
-
-    // Initialize transport layer (USB CDC, UART, etc.)
-    debug_transport_init(&transport);
-
-    // Initialize port layer (Bare-metal or FreeRTOS)
-    debug_port_init(&port);
-
-    // Initialize debug module
-    int ret = debug_init(&transport, &port);
-    if (ret != 0) {
-        // Handle initialization error
-    }
-
-    // Example logging
-    LOG_ERROR("Fatal error: %d\r\n", -1);
-    LOG_WARN("Battery low\r\n");
-    LOG_INFO("System ready\r\n");
-    LOG_DEBUG("Debug info: %d\r\n", 42);
-
-    while (1) {
-        // Main loop
-    }
-}
-
-### Logging Usage
-#include "debug.h"
-
-// Basic log
-debug_log(LOG_INFO, "System initialized");
-
-// Log with sequence number, timestamp, and thread info
-debug_log(LOG_DEBUG, "Sensor value: %d", sensor_val);
-
-// Runtime log level control
-debug_set_level(LOG_WARN);
-log_level_t lvl = debug_get_level();
