@@ -52,76 +52,32 @@ Configurable via `config.h`:
 
 ## Folder Structure
 
----
-
-## Getting Started
-
-### Configuration
-
-Edit `config/config.h` to enable or disable features:
-
-#define DEBUG_ENABLE YES
-#define DEBUG_BUFFER_SIZE 256
-#define DEBUG_USE_BAREMETAL YES
-#define DEBUG_USE_FREERTOS NO
-#define DEBUG_USE_USB_CDC YES
-#define DEBUG_USE_UART NO
-#define DEBUG_ENABLE_SEQUENCE_NO YES
-#define DEBUG_ENABLE_TIME_DATE_INFO YES
-#define DEBUG_ENABLE_THREAD_INFO YES
-
-yaml
-Copy code
-
----
-
-### Initialization
-
-Initialize the debug module at the start of your firmware:
-
-#include "debug.h"
-#include "debug_port.h"
-#include "debug_transport.h"
-
-int ret = debug_init(&usb_cdc_st_transport, &baremetal_port);
-if(ret != 0) {
-// Handle initialization error
-}
-
-yaml
-Copy code
-
----
-
-## Logging Usage
-
-#include "debug.h"
-
-// Basic log
-debug_log(LOG_INFO, "System initialized");
-
-// Log with sequence number, timestamp, and thread info
-debug_log(LOG_DEBUG, "Sensor value: %d", sensor_val);
-
-// Optional helper functions
-debug_set_level(LOG_WARN); // Set runtime log level
-log_level_t lvl = debug_get_level();
-
-yaml
-Copy code
-
----
-
-## Transport and Port
-
-**Port Layer**: Handles timestamp, thread info, and locking  
-
-- Bare-metal: `debug_port_baremetal.c`  
-- FreeRTOS: `debug_port_freertos.c`  
-
-**Transport Layer**: Abstract interface to send logs  
-
-- UART (ST, TI)  
-- USB CDC (ST)  
-
----
+```plaintext
+Debug
+├── doc/                  # Doxygen or user documentation
+├── usage/                # Example usage projects
+├── config/
+│   └── config.h          # Module configuration
+├── core/
+│   ├── debug.c
+│   └── debug.h
+├── port/
+│   ├── debug_port.c
+│   ├── debug_port.h
+│   ├── freertos/
+│   │   ├── debug_port_freertos.c
+│   │   └── debug_port_freertos.h
+│   └── baremetal/
+│       ├── debug_port_baremetal.c
+│       └── debug_port_baremetal.h
+├── transport/
+│   ├── debug_transport.c
+│   └── debug_transport.h
+├── uart/
+│   ├── debug_transport_uart_st.c
+│   ├── debug_transport_uart_st.h
+│   ├── debug_transport_uart_ti.c
+│   └── debug_transport_uart_ti.h
+└── usb_cdc/
+    ├── debug_transport_usb_cdc_st.c
+    └── debug_transport_usb_cdc_st.h
