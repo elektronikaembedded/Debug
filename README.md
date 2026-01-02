@@ -81,7 +81,7 @@ Debug
 └── usb_cdc/
     ├── debug_transport_usb_cdc_st.c
     └── debug_transport_usb_cdc_st.h
-
+---
 ## Getting Started
 
 ### Configuration
