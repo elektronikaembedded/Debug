@@ -82,13 +82,14 @@ Debug
     ├── debug_transport_usb_cdc_st.c
     └── debug_transport_usb_cdc_st.h
 ---
+
 ## Getting Started
 
 ### Configuration
 
 Edit `config/config.h` to enable or disable features:
 
-```c
+```
 #define DEBUG_ENABLE                YES
 #define DEBUG_BUFFER_SIZE           256
 #define DEBUG_USE_BAREMETAL         YES
@@ -98,9 +99,10 @@ Edit `config/config.h` to enable or disable features:
 #define DEBUG_ENABLE_SEQUENCE_NO    YES
 #define DEBUG_ENABLE_TIME_DATE_INFO YES
 #define DEBUG_ENABLE_THREAD_INFO    YES
+
 ### Initialization
 
-```c
+```
 #include "debug.h"
 #include "debug_port.h"
 #include "debug_transport.h"
