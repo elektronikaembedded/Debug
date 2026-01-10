@@ -1,18 +1,24 @@
-/****************************************************************************************
- * @file        debug_transport_uart_st.h
- * @author      Sarath S
- * @date        2026-01-02
- * @version     1.0
- * @brief       STM32 UART debug transport interface
+/**
+ * @file      debug_transport_uart_st.h
+ * @brief     UART debug transport interface (STM32)
+ * @version   1.0.0
+ * @date      2026-01-02
+ * @author    Sarath S
  *
  * @details
- * Declares the UART-based debug transport layer used by the debug framework.
- * Provides a function to retrieve the transport operations table for sending
- * debug data over UART. This allows the debug core to remain transport-agnostic.
+ * This header declares the UART-based debug transport layer used by the
+ * debug framework on STM32 platforms.
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * It provides access to a transport operations table implementing the
+ * standard debug transport interface, enabling debug output over UART
+ * while keeping the debug core transport-agnostic.
+ *
+ * @par Contact
+ * elektronikaembedded@gmail.com
+ *
+ * @par Website
+ * https://elektronikaembedded.wordpress.com
+ */
 
 #ifndef DEBUG_TRANSPORT_UART_ST_H
 #define DEBUG_TRANSPORT_UART_ST_H
@@ -25,21 +31,26 @@
 extern "C" {
 #endif
 
-/****************************** Header include files ************************************/
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
 #include "common.h"
-#include "debug_transport.h"    /*!< Required for debug_transport_ops_t */
+#include "debug_transport.h"    /**< Required for debug_transport_ops_t */
 
-/****************************** Function prototypes ************************************/
+/*******************************************************************************
+ * Public Functions
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Get UART debug transport operations
- * \return          Pointer to UART transport operations table
+/**
+ * @brief Get UART debug transport operations (STM32).
  *
- * \note
- * This function is called by the debug core during initialization to obtain
- * function pointers for the UART transport operations (init, deinit, write).
- * Intended for STM32 platforms.
- *---------------------------------------------------------------------------*/
+ * @return Pointer to the UART transport operations table.
+ *
+ * @note
+ * This function is called by the debug transport selector during
+ * framework initialization to obtain function pointers for the
+ * UART transport backend.
+ */
 const debug_transport_ops_t *debug_transport_uart_st_ops(void);
 
 #ifdef __cplusplus
@@ -49,4 +60,6 @@ const debug_transport_ops_t *debug_transport_uart_st_ops(void);
 #endif /* DEBUG_USE_UART */
 #endif /* DEBUG_TRANSPORT_UART_ST_H */
 
-/****************************** End of file *********************************************/
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

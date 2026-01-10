@@ -1,17 +1,27 @@
-/****************************************************************************************
- * @file        debug_transport_usb_cdc_st.h
- * @author      Sarath S
- * @date        2025-08-07
- * @version     1.0
- * @brief       USB CDC debug transport interface
+/**
+ * @file      debug_transport_usb_cdc_st.h
+ * @brief     USB CDC debug transport interface (STM32)
+ * @version   1.0.0
+ * @date      2025-08-07
+ * @author    Sarath S
  *
  * @details
- * Declares the USB CDC debug transport layer used by the debug framework.
- * Provides functions to initialize and send debug data over USB.
+ * This header declares the USB CDC debug transport layer used by the
+ * debug framework on STM32 platforms.
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * It provides access to a transport operations table that implements
+ * the standard debug transport interface, allowing debug output to be
+ * sent over USB CDC.
+ *
+ * The debug core retrieves this operations table during initialization
+ * and remains independent of the underlying USB CDC implementation.
+ *
+ * @par Contact
+ * elektronikaembedded@gmail.com
+ *
+ * @par Website
+ * https://elektronikaembedded.wordpress.com
+ */
 
 #ifndef DEBUG_TRANSPORT_USB_CDC_ST_H
 #define DEBUG_TRANSPORT_USB_CDC_ST_H
@@ -24,23 +34,26 @@
 extern "C" {
 #endif
 
-/****************************** Header include files ************************************/
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
 #include "common.h"
-#include "debug_transport.h"   /*!< Required for debug_transport_ops_t */
+#include "debug_transport.h"   /**< Required for debug_transport_ops_t */
 
-/****************************** Function prototypes ************************************/
+/*******************************************************************************
+ * Public Functions
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Get USB CDC debug transport operations
- * \param[in]       None
- * \param[out]      None
- * \param[in/out]   None
- * \return          Pointer to USB CDC transport operations table
+/**
+ * @brief Get USB CDC debug transport operations.
  *
- * \note
- * This is used by the debug core during initialization to get
- * the function pointers for USB CDC transport.
- *---------------------------------------------------------------------------*/
+ * @return Pointer to the USB CDC transport operations table.
+ *
+ * @note
+ * This function is used by the debug transport selector during
+ * initialization to obtain the function pointers for the USB CDC
+ * transport backend.
+ */
 const debug_transport_ops_t *debug_transport_usb_cdc_ops(void);
 
 #ifdef __cplusplus
@@ -48,6 +61,8 @@ const debug_transport_ops_t *debug_transport_usb_cdc_ops(void);
 #endif
 
 #endif /* DEBUG_USE_USB_CDC */
-#endif /* DEBUG_TRANSPORT_USB_CDC_H */
+#endif /* DEBUG_TRANSPORT_USB_CDC_ST_H */
 
-/****************************** End of file *********************************************/
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

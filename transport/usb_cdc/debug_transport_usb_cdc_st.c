@@ -1,35 +1,53 @@
-/****************************************************************************************
- * @file        debug_transport_usb_cdc_st.c
- * @author      Sarath S
- * @date        2025-08-15
- * @version     1.0
- * @brief       USB CDC debug transport implementation
+/**
+ * @file      debug_transport_usb_cdc_st.c
+ * @brief     USB CDC debug transport implementation (STM32)
+ * @version   1.0.0
+ * @date      2025-08-15
+ * @author    Sarath S
  *
  * @details
- * Implements the USB CDC debug transport layer.
- * Provides init, deinit, and write operations required by the
- * debug framework to send log data over USB CDC.
+ * This module implements the USB CDC debug transport layer for STM32
+ * platforms.
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * It provides the init, deinit, and write operations required by the
+ * debug framework to transmit log data over USB CDC.
+ *
+ * The USB device stack is expected to be initialized externally by
+ * the application.
+ *
+ * @par Contact
+ * elektronikaembedded@gmail.com
+ *
+ * @par Website
+ * https://elektronikaembedded.wordpress.com
+ */
 
 #include "config.h"
 
 #if DEBUG_USE_USB_CDC
 
-/****************************** Header include files ************************************/
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
 #include "debug_transport_usb_cdc_st.h"
 #include "debug_transport.h"
 #include "usbd_cdc_if.h"
 #include "usbd_def.h"
 
-/****************************** Static function prototypes ******************************/
+/*******************************************************************************
+ * Private Function Prototypes (Static)
+ *******************************************************************************/
 static int usb_cdc_init(void);
 static int usb_cdc_deinit(void);
 static int usb_cdc_write(const uint8_t *data, size_t len);
 
-/****************************** Static variable definitions ******************************/
+/*******************************************************************************
+ * Private Variables (Static)
+ *******************************************************************************/
+
+/**
+ * @brief USB CDC transport operations table
+ */
 static const debug_transport_ops_t DEBUG_TRANSPORT_USB_CDC =
 {
     .init   = usb_cdc_init,
@@ -37,45 +55,52 @@ static const debug_transport_ops_t DEBUG_TRANSPORT_USB_CDC =
     .write  = usb_cdc_write,
 };
 
-/****************************** Function definitions ************************************/
+/*******************************************************************************
+ * Private Function Definitions (Static)
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Initialize USB CDC debug transport
- * \param[in]       None
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on success
- * \note            USB device stack is expected to be initialized externally
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Initialize the USB CDC debug transport.
+ *
+ * @retval 0  Initialization successful.
+ *
+ * @note
+ * The USB device stack is expected to be initialized externally
+ * (typically in main()).
+ */
 static int usb_cdc_init(void)
 {
     /* USB device already initialized in main() */
     return 0;
-} /* End of this function */
+}/* End of usb_cdc_init() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Deinitialize USB CDC debug transport
- * \param[in]       None
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on success
- * \note            USB device stack is expected to be initialized externally
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Deinitialize the USB CDC debug transport.
+ *
+ * @retval 0  Deinitialization successful.
+ *
+ * @note
+ * The USB device stack is expected to be managed externally.
+ */
 static int usb_cdc_deinit(void)
 {
     /* USB device already initialized in main() */
     return 0;
-} /* End of this function */
+}/* End of usb_cdc_deinit() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Write debug data over USB CDC
- * \param[in]       data   Pointer to data buffer
- * \param[in]       len    Number of bytes to transmit
- * \param[out]      None
- * \param[in/out]   None
- * \return          Number of bytes written, or -1 on error
- * \note            Returns -1 if USB CDC is busy or parameters are invalid
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Write debug data over USB CDC.
+ *
+ * @param[in] data Pointer to data buffer.
+ * @param[in] len  Number of bytes to transmit.
+ *
+ * @retval >=0  Number of bytes written.
+ * @retval -1   Transmission failed or USB busy.
+ *
+ * @note
+ * Returns -1 if the USB CDC interface is busy or if the
+ * input parameters are invalid.
+ */
 static int usb_cdc_write(const uint8_t *data, size_t len)
 {
     if ((NULL == data) || (0U == len))
@@ -90,21 +115,27 @@ static int usb_cdc_write(const uint8_t *data, size_t len)
     }
 
     return -1;
-} /* End of this function */
+}/* End of usb_cdc_write() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Get USB CDC debug transport operations
- * \param[in]       None
- * \param[out]      None
- * \param[in/out]   None
- * \return          Pointer to USB CDC transport operations table
- * \note            Used by debug core during initialization
- *---------------------------------------------------------------------------*/
+/*******************************************************************************
+ * Public Function Definitions
+ *******************************************************************************/
+
+/**
+ * @brief Get USB CDC debug transport operations.
+ *
+ * @return Pointer to the USB CDC transport operations table.
+ *
+ * @note
+ * Used by the debug transport selector during framework initialization.
+ */
 const debug_transport_ops_t *debug_transport_usb_cdc_ops(void)
 {
     return &DEBUG_TRANSPORT_USB_CDC;
-} /* End of this function */
+}/* End of debug_transport_usb_cdc_ops() */
 
 #endif /* DEBUG_USE_USB_CDC */
 
-/****************************** End of file *********************************************/
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

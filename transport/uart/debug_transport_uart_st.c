@@ -1,37 +1,52 @@
-/****************************************************************************************
- * @file        debug_transport_uart_st.c
- * @author      Sarath S
- * @date        2026-01-02
- * @version     1.0
- * @brief       STM32 UART debug transport implementation
+/**
+ * @file      debug_transport_uart_st.c
+ * @brief     UART debug transport implementation (STM32)
+ * @version   1.0.0
+ * @date      2026-01-02
+ * @author    Sarath S
  *
  * @details
- * This file implements the UART-based debug transport layer for STM32 MCUs.
- * It provides standard init, deinit, and write operations required by
- * the debug framework to send log data over UART.
+ * This module implements the UART-based debug transport layer for STM32
+ * microcontrollers.
  *
- * The UART peripheral is assumed to be initialized externally (e.g., via
- * HAL_UART_Init or STM32CubeMX configuration).
+ * It provides the init, deinit, and write operations required by the
+ * debug framework to transmit log data over UART.
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * The UART peripheral is expected to be initialized externally
+ * (e.g., via HAL_UART_Init or STM32CubeMX configuration).
+ *
+ * @par Contact
+ * elektronikaembedded@gmail.com
+ *
+ * @par Website
+ * https://elektronikaembedded.wordpress.com
+ */
 
 #include "config.h"
 
 #if DEBUG_USE_UART
 
-/****************************** Header include files ************************************/
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
 #include "debug_transport_uart_st.h"
 #include "debug_transport.h"
 #include "stm32f4xx_hal.h"   /* Replace with MCU-specific HAL header if needed */
 
-/****************************** Static function prototypes ******************************/
+/*******************************************************************************
+ * Private Function Prototypes (Static)
+ *******************************************************************************/
 static int uart_init(void);
 static int uart_deinit(void);
 static int uart_write(const uint8_t *data, size_t len);
 
-/****************************** Static variable definitions ******************************/
+/*******************************************************************************
+ * Private Variables (Static)
+ *******************************************************************************/
+
+/**
+ * @brief UART transport operations table
+ */
 static const debug_transport_ops_t DEBUG_TRANSPORT_UART =
 {
     .init   = uart_init,
@@ -39,40 +54,53 @@ static const debug_transport_ops_t DEBUG_TRANSPORT_UART =
     .write  = uart_write,
 };
 
-/****************************** Function definitions ************************************/
+/*******************************************************************************
+ * Private Function Definitions (Static)
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Initialize UART debug transport
- * \return          0 on success
- * \note
- * UART peripheral must be initialized externally (HAL_UART_Init or CubeMX).
- * No initialization is performed here.
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Initialize the UART debug transport.
+ *
+ * @retval 0  Initialization successful.
+ *
+ * @note
+ * The UART peripheral must be initialized externally
+ * (HAL_UART_Init or STM32CubeMX).
+ * No initialization is performed in this function.
+ */
 static int uart_init(void)
 {
     return 0;
-} /* End of uart_init() */
+}/* End of uart_init() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Deinitialize UART debug transport
- * \return          0 on success
- * \note
- * Placeholder function. No resources are freed in the current implementation.
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Deinitialize the UART debug transport.
+ *
+ * @retval 0  Deinitialization successful.
+ *
+ * @note
+ * Placeholder function. No resources are released in the
+ * current implementation.
+ */
 static int uart_deinit(void)
 {
     return 0;
-} /* End of uart_deinit() */
+}/* End of uart_deinit() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Write debug data over UART
- * \param[in]       data   Pointer to data buffer
- * \param[in]       len    Number of bytes to transmit
- * \return          Number of bytes written, or -1 on error
- * \note
- * Uses HAL_UART_Transmit in blocking mode. Ensure that `huart_debug`
- * is defined and initialized elsewhere in the project.
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Write debug data over UART.
+ *
+ * @param[in] data Pointer to data buffer.
+ * @param[in] len  Number of bytes to transmit.
+ *
+ * @retval >=0  Number of bytes written.
+ * @retval -1   Transmission failed or invalid parameters.
+ *
+ * @note
+ * Uses HAL_UART_Transmit() in blocking mode.
+ * Ensure that the UART handle `huart_debug` is defined and
+ * initialized elsewhere in the application.
+ */
 static int uart_write(const uint8_t *data, size_t len)
 {
     if ((NULL == data) || (0U == len))
@@ -82,25 +110,37 @@ static int uart_write(const uint8_t *data, size_t len)
 
     extern UART_HandleTypeDef huart_debug;
 
-    if (HAL_OK == HAL_UART_Transmit(&huart_debug, (uint8_t *)data, len, HAL_MAX_DELAY))
+    if (HAL_OK == HAL_UART_Transmit(&huart_debug,
+                                   (uint8_t *)data,
+                                   len,
+                                   HAL_MAX_DELAY))
     {
         return (int)len;
     }
 
     return -1;
-} /* End of uart_write() */
+}/* End of uart_write() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Get UART transport operations table
- * \return          Pointer to UART transport operations structure
- * \note
- * Called by the debug core during initialization to obtain transport functions.
- *---------------------------------------------------------------------------*/
+/*******************************************************************************
+ * Public Function Definitions
+ *******************************************************************************/
+
+/**
+ * @brief Get UART debug transport operations (STM32).
+ *
+ * @return Pointer to the UART transport operations table.
+ *
+ * @note
+ * Called by the debug transport selector during framework
+ * initialization.
+ */
 const debug_transport_ops_t *debug_transport_uart_st_ops(void)
 {
     return &DEBUG_TRANSPORT_UART;
-} /* End of debug_transport_uart_st_ops() */
+}/* End of debug_transport_uart_st_ops() */
 
 #endif /* DEBUG_USE_UART */
 
-/****************************** End of file *********************************************/
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

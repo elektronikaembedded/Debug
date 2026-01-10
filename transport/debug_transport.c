@@ -1,22 +1,24 @@
-/****************************************************************************************
- * @file        debug_transport.c
- * @author      Sarath S
- * @date        2026-01-02
- * @version     1.0
- * @brief       Debug transport implementation
+/**
+ * @file      debug_transport.c
+ * @brief     Debug transport selection and initialization
+ * @version   1.0.0
+ * @date      2026-01-02
+ * @author    Sarath S
  *
  * @details
- * This file selects and initializes the appropriate debug transport
- * (USB CDC, UART, or future transports) based on compile-time options
- * defined in config.h.
+ * This module selects and initializes the appropriate debug transport
+ * based on compile-time configuration options defined in config.h.
  *
- * The debug core interacts with the selected transport through a
- * standard operations table, keeping it independent of the
- * underlying hardware or communication interface.
+ * Supported transports:
+ *   - USB CDC
+ *   - UART (STM32, NXP, TI)
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * The debug core interacts with the selected transport exclusively
+ * through a transport HAL operations table, ensuring portability and
+ * independence from vendor-specific implementations.
+ *
+ * The transport layer may optionally provide init and deinit routines.
+ */
 
 #include "config.h"
 #include "debug_transport.h"
@@ -37,36 +39,41 @@
     #endif
 #endif
 
-/****************************** Function definitions ************************************/
+/*******************************************************************************
+ * Public Function Definitions
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Initialize the debug transport layer
- * \param[in]       transport   Pointer to a debug_transport_hal_t instance
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on successful initialization
- *                  -1 if transport pointer is NULL
- * \note
- * Chooses the transport backend (USB CDC or UART) based on config.h settings.
- * If the selected transport provides an init function, it will be called.
- * This allows the debug core to remain independent of the underlying interface.
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Initialize the debug transport layer.
+ *
+ * @param[in,out] transport Pointer to a debug transport HAL instance.
+ *
+ * @retval 0   Transport initialized successfully.
+ * @retval -1  Invalid transport pointer or initialization failure.
+ *
+ * @note
+ * The transport backend (USB CDC or UART) is selected based on
+ * compile-time configuration macros defined in config.h.
+ *
+ * If the selected transport provides an init() operation, it will
+ * be invoked here.
+ */
 int debug_transport_init(debug_transport_hal_t *transport)
 {
-    if (NULL == transport)
+    if(NULL == transport)
     {
         return -1;
     }
 
 #if DEBUG_USE_USB_CDC
-    transport->debug_transport_ops = *debug_transport_usb_cdc_ops();
+    transport->ops = debug_transport_usb_cdc_ops();
 #elif DEBUG_USE_UART
     #if DEBUG_VENDOR_STM32
-        transport->debug_transport_ops = *debug_transport_uart_st_ops();
+    	transport->ops =  debug_transport_uart_st_ops();
     #elif DEBUG_VENDOR_NXP
-        transport->debug_transport_ops = *debug_transport_uart_nxp_ops();
+    	transport->ops =  = debug_transport_uart_nxp_ops();
     #elif DEBUG_VENDOR_TI
-        transport->debug_transport_ops = *debug_transport_uart_ti_ops();
+    	transport->ops =  = debug_transport_uart_ti_ops();
     #else
         #error "No UART transport vendor selected!"
     #endif
@@ -74,26 +81,26 @@ int debug_transport_init(debug_transport_hal_t *transport)
     #error "No debug transport selected! Define DEBUG_USE_USB_CDC or DEBUG_USE_UART in config.h"
 #endif
 
-    if (NULL != transport->debug_transport_ops.init)
+    if(NULL != transport->ops->init)
     {
-        return transport->debug_transport_ops.init();
+        return transport->ops->init();
     }
 
     return 0;
-} /* End of debug_transport_init() */
+}/* End of debug_transport_init() */
 
-/*!----------------------------------------------------------------------------
- * \brief           Deinitialize the debug transport layer
- * \param[in]       transport   Pointer to a debug_transport_hal_t instance
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on successful deinitialization
- *                  -1 if transport pointer is NULL
- * \note
- * If the selected transport provides a deinit function, it will be called.
- * Otherwise, this function returns 0, allowing the debug framework to
- * cleanly release resources without knowing the transport implementation.
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Deinitialize the debug transport layer.
+ *
+ * @param[in,out] transport Pointer to a debug transport HAL instance.
+ *
+ * @retval 0   Transport deinitialized successfully.
+ * @retval -1  Invalid transport pointer or deinitialization failure.
+ *
+ * @note
+ * If the selected transport does not provide a deinit() operation,
+ * this function returns success without performing any action.
+ */
 int debug_transport_deinit(debug_transport_hal_t *transport)
 {
     if (NULL == transport)
@@ -101,12 +108,14 @@ int debug_transport_deinit(debug_transport_hal_t *transport)
         return -1;
     }
 
-    if (NULL != transport->debug_transport_ops.deinit)
+    if(NULL != transport->ops->deinit)
     {
-        return transport->debug_transport_ops.deinit();
+        return transport->ops->deinit();
     }
 
     return 0;
-} /* End of debug_transport_deinit() */
+}/* End of debug_transport_deinit() */
 
-/****************************** End of file *********************************************/
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

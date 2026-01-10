@@ -6,13 +6,20 @@
  * @brief       Bare-metal debug port interface
  *
  * @details
- * Declares the bare-metal debug port layer for the debug framework.
- * Provides minimal OS abstraction services such as:
- *   - Locking / unlocking (no-op)
- *   - ISR detection (stub or processor-specific)
- *   - Timestamp retrieval (stub)
- *   - Thread name access (always "MAIN" or "ISR")
- * Exposes only the getter for the operations table.
+ * This file declares the bare-metal debug port layer for the debug framework.
+ *
+ * It provides minimal OS abstraction services for systems without an RTOS:
+ *   - Locking and unlocking (implemented as no-ops)
+ *   - ISR context detection (stub or CPU-specific)
+ *   - Timestamp retrieval (stub or system tick based)
+ *   - Thread name access (returns static identifiers: "MAIN" or "ISR")
+ *
+ * Only a single accessor function is exposed, returning the operations table
+ * required by the debug core.
+ *
+ * @note
+ * The actual implementation is provided in debug_port_baremetal.c and selected
+ * at compile time using DEBUG_USE_BAREMETAL in config.h.
  *
  * @contact     elektronikaembedded@gmail.com
  * @website     https://elektronikaembedded.wordpress.com
@@ -33,16 +40,20 @@ extern "C" {
 #include "common.h"
 #include "debug_port.h"   /*!< Required for debug_port_ops_t */
 
-/****************************** Function prototypes ************************************/
+/****************************** Public Function Declarations ****************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Get bare-metal debug port operations table
- * \param[in]       None
- * \param[out]      None
- * \param[in/out]   None
- * \return          Pointer to bare-metal debug port operations table
- * \note            Intended for systems without an RTOS
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Get bare-metal debug port operations table
+ *
+ * @return Pointer to constant bare-metal debug port operations table
+ *
+ * @details
+ * This function is called by the debug framework during initialization to obtain
+ * the bare-metal implementation of the debug port operations.
+ *
+ * @note
+ * Intended for use in systems without an operating system.
+ */
 const debug_port_ops_t *debug_port_baremetal_ops(void);
 
 #ifdef __cplusplus

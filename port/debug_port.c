@@ -1,18 +1,33 @@
-/****************************************************************************************
- * @file        debug_port.c
- * @author      Sarath S
- * @date        2026-01-02
- * @version     1.0
- * @brief       Debug port selection and initialization
+/**
+ * @file      debug_port.c
+ * @brief     Debug port selection and initialization.
+ * @version   1.0.0
+ * @date      2026-01-02
+ * @author    Sarath S
  *
  * @details
- * Selects and initializes the appropriate debug port (FreeRTOS or Bare-metal)
- * based on compile-time configuration in config.h. Provides a unified API
- * for the debug framework to remain OS-agnostic.
+ * This module selects and initializes the appropriate debug port
+ * implementation based on compile-time options defined in config.h.
  *
- * @contact     elektronikaembedded@gmail.com
- * @website     https://elektronikaembedded.wordpress.com
- ****************************************************************************************/
+ * Supported port layers:
+ *  - FreeRTOS
+ *  - Bare-metal
+ *
+ * Provides a unified interface for synchronization, timing,
+ * and thread-related services to keep the debug framework
+ * OS-agnostic.
+ *
+ * @par Contact
+ * elektronikaembedded@gmail.com
+ *
+ * @par Website
+ * https://elektronikaembedded.wordpress.com
+ */
+
+/** @defgroup DEBUG_PORT Debug Port Layer
+ *  @brief Debug port abstraction and initialization.
+ *  @{
+ */
 
 #include "config.h"
 #include "debug_port.h"
@@ -25,16 +40,42 @@
 #include "debug_port_baremetal.h"
 #endif
 
-/****************************** Function definitions ************************************/
+/*******************************************************************************
+ * Private Macros
+ *******************************************************************************/
 
-/*!----------------------------------------------------------------------------
- * \brief           Initialize debug port
- * \param[in]       port   Pointer to debug_port_t
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on success, -1 on error
- * \note            Chooses the port implementation based on config.h
- *---------------------------------------------------------------------------*/
+/*******************************************************************************
+ * Private Types
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Private Variables (Static)
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Private Function Prototypes (Static)
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Private Function Definitions (Static)
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Public Function Definitions
+ *******************************************************************************/
+
+/**
+ * @brief Initialize the debug port layer.
+ *
+ * @param[in,out] port Pointer to a debug port abstraction instance.
+ *
+ * @retval 0   Port initialized successfully
+ * @retval -1  Invalid port pointer or initialization failure
+ *
+ * @note
+ * The port backend (FreeRTOS or Bare-metal) is selected at compile time
+ * via config.h options.
+ */
 int debug_port_init(debug_port_t *port)
 {
     if (NULL == port)
@@ -43,29 +84,32 @@ int debug_port_init(debug_port_t *port)
     }
 
 #if DEBUG_USE_FREERTOS
-    port->debug_port_ops = *debug_port_freertos_ops();
+    port->ops = debug_port_freertos_ops();
 #elif DEBUG_USE_BAREMETAL
-    port->debug_port_ops = *debug_port_baremetal_ops();
+    port->ops = debug_port_baremetal_ops();
 #else
 #error "No debug port selected! Define DEBUG_USE_FREERTOS or DEBUG_USE_BAREMETAL in config.h"
 #endif
 
-    if (NULL != port->debug_port_ops.init)
+    if (NULL != port->ops->init)
     {
-        return port->debug_port_ops.init();
+        return port->ops->init();
     }
 
     return 0;
-} /* End of this function */
+}
 
-/*!----------------------------------------------------------------------------
- * \brief           Deinitialize debug port
- * \param[in]       port   Pointer to debug_port_t
- * \param[out]      None
- * \param[in/out]   None
- * \return          0 on success, -1 on error
- * \note            Calls the selected port's deinit function if available
- *---------------------------------------------------------------------------*/
+/**
+ * @brief Deinitialize the debug port layer.
+ *
+ * @param[in,out] port Pointer to a debug port abstraction instance.
+ *
+ * @retval 0   Port deinitialized successfully
+ * @retval -1  Invalid port pointer or deinitialization failure
+ *
+ * @note
+ * Calls the selected port's deinit() function if implemented.
+ */
 int debug_port_deinit(debug_port_t *port)
 {
     if (NULL == port)
@@ -73,12 +117,16 @@ int debug_port_deinit(debug_port_t *port)
         return -1;
     }
 
-    if (NULL != port->debug_port_ops.deinit)
+    if (NULL != port->ops->deinit)
     {
-        return port->debug_port_ops.deinit();
+        return port->ops->deinit();
     }
 
     return 0;
-} /* End of this function */
+}
 
-/****************************** End of this file ****************************************/
+/** @} */ // End of DEBUG_PORT
+
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/
