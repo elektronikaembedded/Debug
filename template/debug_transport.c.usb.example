@@ -1,0 +1,91 @@
+/*******************************************************************************
+ * @file    debug_transport.c.usb.example
+ * @brief   USB CDC transport for debug module (STM32)
+ *
+ * @details
+ * Provides USB CDC based output for debug logs.
+ * Uses STM32 USB device stack (CDC class).
+ *
+ * Note:
+ * - USB stack must be initialized by application
+ * - This module only handles data transmission
+ *
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "debug_transport.h"
+#include "usbd_cdc_if.h"
+#include "usbd_def.h"
+#include "debug_config.h"
+
+/*******************************************************************************
+ * Static Prototypes
+ *******************************************************************************/
+static int trns_init(void);
+static int trns_deinit(void);
+static int trns_write(const uint8_t *data, size_t len);
+
+/*******************************************************************************
+ * Transport Ops
+ *******************************************************************************/
+
+/* USB CDC transport interface */
+static const debug_transport_ops_t debug_transport_ops =
+{
+    .init   = trns_init,
+    .deinit = trns_deinit,
+    .write  = trns_write,
+};
+
+/*******************************************************************************
+ * Static Functions
+ *******************************************************************************/
+
+/* Init: nothing to do (handled in application) */
+static int trns_init(void)
+{
+    return 0;
+}
+
+/* Deinit: nothing to do */
+static int trns_deinit(void)
+{
+    return 0;
+}
+
+/* Write data over USB CDC */
+static int trns_write(const uint8_t *data, size_t len)
+{
+    if ((NULL == data) || (len == 0U))
+    {
+        return -1; /* error null pointer */
+    }
+
+    /* Send data (non-blocking) */
+    if (USBD_OK == CDC_Transmit_FS((uint8_t *)data, len))
+    {
+        return (int)len;
+    }
+
+    return -10; /* busy or error */
+}
+
+/*******************************************************************************
+ * Public API
+ *******************************************************************************/
+
+int debug_transport_init(debug_transport_t *trns)
+{
+	trns->ops = &debug_transport_ops;
+
+	return 0;
+}
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

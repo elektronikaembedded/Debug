@@ -1,0 +1,94 @@
+/*******************************************************************************
+ * @file    debug_transport.c.uart.example
+ * @brief   UART transport for debug module (STM32)
+ *
+ * @details
+ * Provides UART based output for debug logs.
+ * Uses STM32 UART peripheral
+ *
+ * Note:
+ * - UART must be initialized by application
+ * - This module only handles data transmission
+ *
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "stm32f4xx_hal.h" 
+
+#include "debug_config.h"
+
+/*******************************************************************************
+ * Static Prototypes
+ *******************************************************************************/
+static int trns_init(void);
+static int trns_deinit(void);
+static int trns_write(const uint8_t *data, size_t len);
+
+/*******************************************************************************
+ * Transport Ops
+ *******************************************************************************/
+
+/* USB CDC transport interface */
+static const debug_transport_ops_t debug_transport_ops =
+{
+    .init   = trns_init,
+    .deinit = trns_deinit,
+    .write  = trns_write,
+};
+
+/*******************************************************************************
+ * Static Functions
+ *******************************************************************************/
+
+/* Init: nothing to do (handled in application) */
+static int trns_init(void)
+{
+    return 0;
+}
+
+/* Deinit: nothing to do */
+static int trns_deinit(void)
+{
+    return 0;
+}
+
+/* Write data over USB CDC */
+static int trns_write(const uint8_t *data, size_t len)
+{
+    if ((NULL == data) || (len == 0U))
+    {
+        return -1; /* error null pointer */
+    }
+
+    extern UART_HandleTypeDef huart_debug;
+
+    if (HAL_OK == HAL_UART_Transmit(&huart_debug,
+                                   (uint8_t *)data,
+                                   len,
+                                   HAL_MAX_DELAY))
+    {
+        return (int)len;
+    }
+
+    return -10; /* busy or error */
+}
+
+/*******************************************************************************
+ * Public API
+ *******************************************************************************/
+
+int debug_transport_init(debug_transport_t *trns)
+{
+	trns->ops = &debug_transport_ops;
+
+	return 0;
+}
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

@@ -1,0 +1,89 @@
+/*******************************************************************************
+ * @file    debug_config.h.example
+ * @brief   Debug module configuration (example)
+ *
+ * @details
+ * Copy this file to config.h and update based on your project.
+ *
+ * All options are compile-time (no runtime overhead).
+ *
+ *******************************************************************************/
+
+#ifndef DEBUG_CONFIG_H
+#define DEBUG_CONFIG_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*******************************************************************************
+ * Common Macros
+ *******************************************************************************/
+
+#define YES   1
+#define NO    0
+
+/*******************************************************************************
+ * Debug Enable
+ *******************************************************************************/
+
+/* Enable / Disable debug  */
+#define DEBUG_ENABLE           YES
+
+/* Internal buffer size */
+#define DEBUG_BUFFER_SIZE      256
+
+/*******************************************************************************
+ * OSAL Support (Optional)
+ *******************************************************************************/
+
+/* Enable if using OSAL module */
+#define DEBUG_USE_OSAL         YES
+
+/*******************************************************************************
+ * Transport Selection (choose ONE)
+ *******************************************************************************/
+
+/* UART transport */
+#define DEBUG_USE_UART         YES
+
+/* USB CDC transport */
+#define DEBUG_USE_USB_CDC      NO
+
+#if (DEBUG_USE_UART + DEBUG_USE_USB_CDC) != 1
+#error "Select exactly one debug transport"
+#endif
+
+/*******************************************************************************
+ * Log Features (Optional)
+ *******************************************************************************/
+
+/* Add sequence number [00001] */
+#define DEBUG_ENABLE_SEQUENCE_NO      YES
+
+/* Add timestamp [123456] */
+#define DEBUG_ENABLE_TIME_DATE_INFO   YES
+
+/* Add thread name [MAIN] */
+#define DEBUG_ENABLE_THREAD_INFO      YES
+
+/*******************************************************************************
+ * Notes
+ *******************************************************************************/
+/*
+ * - If DEBUG_ENABLE = NO → all logs removed at compile time
+ * - If DEBUG_USE_OSAL = NO → no thread safety
+ * - Transport must implement:
+ *      init()
+ *      write()
+ */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* DEBUG_CONFIG_H */
+
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/
