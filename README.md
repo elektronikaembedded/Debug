@@ -14,7 +14,7 @@ Supports multiple transports, RTOS or bare-metal environments, and compile-time 
 - [Configuration](#configuration)  
 - [Initialization](#initialization)  
 - [Logging Usage](#logging-usage)  
-- [How to USe](#how-to-use)  
+- [How to Use](#how-to-use)  
 - [License](#license)  
 
 ---
