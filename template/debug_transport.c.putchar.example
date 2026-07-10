@@ -1,0 +1,90 @@
+/*******************************************************************************
+ * @file    debug_transport.c.putchar.example
+ * @brief   light printf (putchar)
+ *
+ * @details
+ * Provides UART based output for debug logs.
+ * Uses STM32 UART peripheral
+ *
+ * Note:
+ * - UART must be initialized by application
+ * - This module only handles data transmission
+ *
+ *******************************************************************************/
+
+/*******************************************************************************
+ * Includes
+ *******************************************************************************/
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "printf.h"
+
+#include "debug_config.h"
+#include "debug_transport.h"
+
+/*******************************************************************************
+ * Static Prototypes
+ *******************************************************************************/
+static int trns_init(void);
+static int trns_deinit(void);
+static int trns_write(const uint8_t *data, size_t len);
+
+/*******************************************************************************
+ * Transport Ops
+ *******************************************************************************/
+
+/* USB CDC transport interface */
+static const debug_transport_ops_t debug_transport_ops =
+{
+    .init   = trns_init,
+    .deinit = trns_deinit,
+    .write  = trns_write,
+};
+
+/*******************************************************************************
+ * Static Functions
+ *******************************************************************************/
+
+/* Init: nothing to do (handled in application) */
+static int trns_init(void)
+{
+    return 0;
+}
+
+/* Deinit: nothing to do */
+static int trns_deinit(void)
+{
+    return 0;
+}
+
+/* Write data over USB CDC */
+static int trns_write(const uint8_t *data, size_t len)
+{
+    if ((data == NULL) || (len == 0U))
+    {
+        return -1;
+    }
+
+    for (size_t i = 0; i < len; i++)
+    {
+        _putchar((char)data[i]);
+    }
+
+    return (int)len;
+}
+
+/*******************************************************************************
+ * Public API
+ *******************************************************************************/
+
+int debug_transport_init(debug_transport_t *trns)
+{
+	trns->ops = &debug_transport_ops;
+
+	return 0;
+}
+/*******************************************************************************
+ * End of file
+ *******************************************************************************/

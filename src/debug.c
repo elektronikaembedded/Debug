@@ -162,16 +162,24 @@ log_level_t debug_get_level(void)
  */
 int debug_write(const char *str)
 {
+
+
     if ((0 == debug_ctx.initialized) || (NULL == str))
     {
         return 0;
     }
+
+
 
     if ((NULL == debug_ctx.transport) ||
         (NULL == debug_ctx.transport->ops->write))
     {
     	return -1; /* error null pointer */
     }
+
+
+    const char *start = str;
+
 
 #ifdef DEBUG_USE_OSAL
     if (debug_ctx.osal && debug_ctx.osal->ops->lock)
@@ -190,7 +198,7 @@ int debug_write(const char *str)
     }
 #endif
 
-    return ret;
+    return (int)(str - start);
 }
 
 /**
